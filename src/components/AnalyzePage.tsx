@@ -34,6 +34,7 @@ export default function AnalyzePage() {
   const [textContent, setTextContent] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [uploadedImagePreview, setUploadedImagePreview] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   const [isAnalyzingText, setIsAnalyzingText] = useState(false);
   const [textAnalysisId, setTextAnalysisId] = useState<Id<"analyses"> | null>(null);
@@ -62,7 +63,43 @@ export default function AnalyzePage() {
     setImageAnalysisId(null);
     setOcrError(null);
     setExtractedOcrText("");
-    
+    setUploadedImagePreview(URL.createObjectURL(file));
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Only clear when leaving the drop zone entirely
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      setIsDragging(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Only image files are supported.");
+      return;
+    }
+    setImageFile(file);
+    setImageAnalysisId(null);
+    setOcrError(null);
+    setExtractedOcrText("");
     setUploadedImagePreview(URL.createObjectURL(file));
   };
 
@@ -204,7 +241,17 @@ export default function AnalyzePage() {
                 <ImageIcon className="inline w-5 h-5 mr-2 text-purple-600" />
                 Upload Image for Text Extraction (OCR)
               </label>
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-purple-400 transition-colors">
+              <div
+                className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+                  isDragging
+                    ? "border-purple-500 bg-purple-50"
+                    : "border-gray-300 hover:border-purple-400"
+                }`}
+                onDragOver={handleDragOver}
+                onDragEnter={handleDragEnter}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+              >
                 {uploadedImagePreview ? (
                   <div className="space-y-4">
                     <img
@@ -227,8 +274,14 @@ export default function AnalyzePage() {
                   </div>
                 ) : (
                   <label className="cursor-pointer block">
-                    <Upload className="w-10 h-10 text-gray-400 mx-auto mb-3" />
-                    <p className="text-gray-600 mb-1">Click to upload or drag and drop</p>
+                    <Upload
+                      className={`w-10 h-10 mx-auto mb-3 transition-colors ${
+                        isDragging ? "text-purple-500" : "text-gray-400"
+                      }`}
+                    />
+                    <p className="text-gray-600 mb-1">
+                      {isDragging ? "Drop your image here" : "Click to upload or drag and drop"}
+                    </p>
                     <p className="text-sm text-gray-500">PNG, JPG, WEBP up to 10 MB</p>
                     <input
                       type="file"

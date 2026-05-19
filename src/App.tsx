@@ -65,7 +65,6 @@ function Header({ currentPage, setCurrentPage }: { currentPage: Page; setCurrent
             <NavLink active={currentPage === "home"} onClick={() => setCurrentPage("home")}>Home</NavLink>
             <NavLink active={currentPage === "about"} onClick={() => setCurrentPage("about")}>About</NavLink>
             <NavLink active={currentPage === "history"} onClick={() => setCurrentPage("history")}>History</NavLink>
-            <NavLink active={currentPage === "evaluation"} onClick={() => setCurrentPage("evaluation")}>Evaluation</NavLink>
             <NavLink active={currentPage === "contact"} onClick={() => setCurrentPage("contact")}>Contact</NavLink>
           </nav>
 
@@ -121,7 +120,6 @@ function Footer({ setCurrentPage }: { setCurrentPage: (page: Page) => void }) {
               <li><button onClick={() => setCurrentPage("about")} className="text-gray-400 hover:text-white transition-colors">About</button></li>
               <li><button onClick={() => setCurrentPage("analyze")} className="text-gray-400 hover:text-white transition-colors">Analyze</button></li>
               <li><button onClick={() => setCurrentPage("history")} className="text-gray-400 hover:text-white transition-colors">History</button></li>
-              <li><button onClick={() => setCurrentPage("evaluation")} className="text-gray-400 hover:text-white transition-colors">Evaluation</button></li>
               <li><button onClick={() => setCurrentPage("contact")} className="text-gray-400 hover:text-white transition-colors">Contact</button></li>
             </ul>
           </div>
